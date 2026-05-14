@@ -17,6 +17,8 @@ WORKDIR /app
 # ── Stage 2: dependencies ─────────────────────────────────────────
 FROM base AS deps
 COPY requirements.txt .
+# Install CPU-only PyTorch first (reduces image size by ~3GB and speeds up build!)
+RUN pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
 # ── Stage 3: final image ──────────────────────────────────────────
