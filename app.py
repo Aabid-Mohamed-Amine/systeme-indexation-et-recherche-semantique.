@@ -214,7 +214,7 @@ st.markdown("""
         Système de Recherche Sémantique dans les Archives Audiovisuelles
       </div>
       <div class="text-xs" style="color:rgba(255,255,255,.35);font-family:'Cairo',sans-serif;direction:rtl">
-        البحث الدلالي في الأرشيف السمعي البصري · PFE Master SID 2025-2026
+        البحث الدلالي في الأرشيف السمعي البصري 
       </div>
     </div>
   </div>
@@ -572,8 +572,12 @@ with tab2:
                     st.error("❌ Aucun segment valide extrait.")
                     st.stop()
 
-                st.write("🔍 Étape 4/4 — Mise à jour index FAISS…")
-                total = add_to_index(embed_model, index, metadata, segments, texts, idx_path, meta_path)
+                st.write("🔍 Étape 4/4 — Mise à jour index FAISS + MongoDB…")
+                total = add_to_index(
+                    embed_model, index, metadata, segments, texts,
+                    idx_path, meta_path,
+                    filename=uploaded.name, lang=lang_code,
+                )
                 st.write(f"   ✅ Index mis à jour : {total:,} segments")
                 status.update(label="✅ Indexation terminée !", state="complete")
 

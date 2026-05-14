@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).parent
@@ -13,6 +14,10 @@ WHISPER_DIR = BASE_DIR / "model"
 # Storage
 UPLOAD_DIR  = BASE_DIR / "uploads"
 VIDEOS_DIR  = BASE_DIR / "videos"
+
+# MongoDB
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27018")
+MONGO_DB  = os.getenv("MONGO_DB",  "SNRT_ARCHIVE")
 
 # Fallback model names
 BIENC_BASE  = "paraphrase-multilingual-MiniLM-L12-v2"

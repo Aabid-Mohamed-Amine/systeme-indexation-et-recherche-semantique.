@@ -2,12 +2,15 @@ import subprocess
 import numpy as np
 import faiss
 import json
+import logging
 import librosa
 import torch
 from pathlib import Path
 from sentence_transformers import SentenceTransformer
 from utils import clean_whisper, fmt_timecode
 from config import WINDOW_SIZE, MIN_WORDS
+
+log = logging.getLogger(__name__)
 
 
 def extract_audio(ffmpeg: str, video_path: Path, audio_path: Path) -> tuple[bool, str]:
@@ -102,6 +105,8 @@ def add_to_index(
     texts: list,
     index_path: Path,
     meta_path: Path,
+    filename: str = "",
+    lang: str = "",
 ) -> int:
     embeddings = embed_model.encode(
         texts, normalize_embeddings=True, convert_to_numpy=True, show_progress_bar=False,
@@ -111,4 +116,14 @@ def add_to_index(
     faiss.write_index(index, str(index_path))
     with open(meta_path, "w", encoding="utf-8") as f:
         json.dump(metadata, f, ensure_ascii=False, indent=2)
+
+    # Persist to MongoDB (non-blocking on failure — FAISS is the source of truth)
+    if filename:
+        try:
+            from db import save_video, is_available
+            if is_available():
+                save_video(filename, lang, segments)
+        except Exception as exc:
+            log.warning("MongoDB save skipped: %s", exc)
+
     return index.ntotal
