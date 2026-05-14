@@ -16,6 +16,7 @@ from config import (
     DEFAULT_K,
     DEFAULT_SCORE,
     FAISS_V2,
+    META_V2,
     UPLOAD_DIR,
     VIDEOS_DIR,
 )
