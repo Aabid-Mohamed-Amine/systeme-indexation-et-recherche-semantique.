@@ -1,0 +1,11 @@
+[server]
+maxUploadSize = 2000        # 2 Go max par fichier uploadé
+
+[runner]
+magicEnabled = false        # supprime le warning "magic" de Streamlit
+
+[client]
+showErrorDetails = true
+
+[logger]
+level = "error"             # supprime les warnings/info au démarrage

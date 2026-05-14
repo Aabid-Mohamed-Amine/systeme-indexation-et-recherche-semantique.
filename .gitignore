@@ -1,0 +1,26 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# Large model files — store on Drive or DVC
+model/
+snrt_biencoder_v2/
+data/*.faiss
+data/*.json
+
+# Videos & uploads
+videos/
+uploads/
+
+# Dev
+screenshots/
+*.log
+
+# Notebooks, checkpoints, and temp files
+*.ipynb
+.ipynb_checkpoints/
+checkpoints/
+tmp/
+*.tmp

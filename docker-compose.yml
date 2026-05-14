@@ -1,0 +1,24 @@
+services:
+  snrt-search:
+    build: .
+    image: snrt-search:latest
+    container_name: snrt_archives
+    ports:
+      - "8501:8501"
+    volumes:
+      # Models & index — heavy files mounted, not baked into image
+      - ./data:/app/data
+      - ./model:/app/model
+      - ./snrt_biencoder_v2:/app/snrt_biencoder_v2
+      - ./videos:/app/videos
+      - ./uploads:/app/uploads
+    environment:
+      - STREAMLIT_SERVER_MAX_UPLOAD_SIZE=2000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8501/_stcore/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s

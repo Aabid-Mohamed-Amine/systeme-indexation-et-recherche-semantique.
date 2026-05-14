@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: snrt-search
+  labels:
+    app: snrt-search
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: snrt-search
+  template:
+    metadata:
+      labels:
+        app: snrt-search
+    spec:
+      containers:
+        - name: snrt-search
+          image: ghcr.io/YOUR_USERNAME/snrt-search:latest
+          ports:
+            - containerPort: 8501
+          env:
+            - name: STREAMLIT_SERVER_MAX_UPLOAD_SIZE
+              value: "2000"
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "500m"
+            limits:
+              memory: "6Gi"
+              cpu: "2"
+          livenessProbe:
+            httpGet:
+              path: /_stcore/health
+              port: 8501
+            initialDelaySeconds: 90
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /_stcore/health
+              port: 8501
+            initialDelaySeconds: 60
+            periodSeconds: 10
+          volumeMounts:
+            - name: data-volume
+              mountPath: /app/data
+            - name: model-volume
+              mountPath: /app/model
+            - name: biencoder-volume
+              mountPath: /app/snrt_biencoder_v2
+            - name: videos-volume
+              mountPath: /app/videos
+            - name: uploads-volume
+              mountPath: /app/uploads
+      volumes:
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: snrt-data-pvc
+        - name: model-volume
+          persistentVolumeClaim:
+            claimName: snrt-model-pvc
+        - name: biencoder-volume
+          persistentVolumeClaim:
+            claimName: snrt-biencoder-pvc
+        - name: videos-volume
+          persistentVolumeClaim:
+            claimName: snrt-videos-pvc
+        - name: uploads-volume
+          persistentVolumeClaim:
+            claimName: snrt-uploads-pvc
