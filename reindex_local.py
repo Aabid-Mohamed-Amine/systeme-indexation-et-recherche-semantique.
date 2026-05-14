@@ -3,7 +3,10 @@
 # Usage:  python reindex_local.py
 # =============================================================================
 
-import os, json, shutil, subprocess
+import json
+import os
+import shutil
+import subprocess
 import numpy as np
 import faiss
 import torch

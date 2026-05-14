@@ -1,30 +1,42 @@
-import warnings, logging, sys
+import logging
+import os
+import re
+import sys
+import time
+import warnings
+from html import escape as h
 from pathlib import Path
 
 # Ensure local modules are always found regardless of CWD
 sys.path.insert(0, str(Path(__file__).parent))
 
+import streamlit as st
+
+from config import (
+    DEFAULT_K,
+    DEFAULT_SCORE,
+    FAISS_V2,
+    UPLOAD_DIR,
+    VIDEOS_DIR,
+)
+from indexer import add_to_index, build_segments, extract_audio, transcribe
+from models import load_biencoder, load_cross_encoder, load_index, load_whisper
+from search import extract_keywords, run_search
+from utils import (
+    display_text,
+    find_ffmpeg,
+    fmt_timecode,
+    highlight,
+    load_videos,
+    match_video,
+    results_to_csv,
+    score_pct,
+)
+
 warnings.filterwarnings("ignore")
 logging.getLogger("transformers").setLevel(logging.ERROR)
 logging.getLogger("torch").setLevel(logging.ERROR)
 logging.getLogger("sentence_transformers").setLevel(logging.ERROR)
-
-import time, re, os
-from html import escape as h
-
-import streamlit as st
-
-from config import (
-    UPLOAD_DIR, VIDEOS_DIR, FAISS_V2, META_V2,
-    DEFAULT_K, DEFAULT_SCORE,
-)
-from models import load_biencoder, load_cross_encoder, load_index, load_whisper
-from search import run_search, extract_keywords
-from indexer import extract_audio, transcribe, build_segments, add_to_index
-from utils import (
-    find_ffmpeg, load_videos, match_video, fmt_timecode,
-    highlight, score_pct, display_text, results_to_csv,
-)
 
 # ── Page config ──────────────────────────────────────────────────
 st.set_page_config(
@@ -180,7 +192,7 @@ st.session_state.setdefault("history", [])
 st.session_state.setdefault("query_val", "")
 
 # ── Header ────────────────────────────────────────────────────────
-st.markdown(f"""
+st.markdown("""
 <div class="relative flex items-center justify-between gap-6 px-8 py-5 mb-0 overflow-hidden"
      style="background:linear-gradient(135deg,#020c1f 0%,#051535 50%,#020c1f 100%);
             border-bottom:1px solid #1a2d4a;">
@@ -535,10 +547,8 @@ with tab2:
             lang_map_up = {"Français 🇫🇷": "fr", "Espagnol 🇪🇸": "es"}
             lang_code   = lang_map_up[lang_sel_ui]
             audio_path  = UPLOAD_DIR / (save_path.stem + ".wav")
-            idx_path    = FAISS_V2 if idx_ver == "v2" else FAISS_V1
-            meta_path   = (UPLOAD_DIR.parent / "data" / "snrt_metadata_v2.json"
-                           if idx_ver == "v2"
-                           else UPLOAD_DIR.parent / "data" / "snrt_metadata.json")
+            idx_path    = FAISS_V2
+            meta_path   = META_V2
 
             with st.status("🎬 Pipeline en cours…", expanded=True) as status:
                 st.write("🔊 Étape 1/4 — Extraction audio (FFmpeg 16kHz mono)…")

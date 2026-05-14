@@ -1,18 +1,26 @@
-import warnings, logging
+import json
+import logging
+import warnings
+
+import faiss
+import streamlit as st
+import torch
+from sentence_transformers import SentenceTransformer
+
+from config import (
+    BIENC_BASE,
+    BIENC_DIR,
+    CROSS_BASE,
+    CROSS_DIR,
+    FAISS_V2,
+    META_V2,
+    WHISPER_DIR,
+)
+
 warnings.filterwarnings("ignore")
 logging.getLogger("transformers").setLevel(logging.ERROR)
 logging.getLogger("torch").setLevel(logging.ERROR)
 logging.getLogger("sentence_transformers").setLevel(logging.ERROR)
-
-import json
-import torch
-import faiss
-import streamlit as st
-from sentence_transformers import SentenceTransformer
-from config import (
-    BIENC_DIR, BIENC_BASE, CROSS_DIR, CROSS_BASE,
-    WHISPER_DIR, FAISS_V2, META_V2,
-)
 
 
 @st.cache_resource(show_spinner=False)

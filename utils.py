@@ -1,4 +1,8 @@
-import io, csv, os, re, shutil
+import csv
+import io
+import os
+import re
+import shutil
 from html import escape as h
 from pathlib import Path
 
